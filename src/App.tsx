@@ -1,5 +1,5 @@
 
-const App = () => {
+/*const App = () => {
 
 
   return (
@@ -16,4 +16,46 @@ const App = () => {
   );
 };
 
+export default App;*/
+
+import React, { useState, useEffect } from 'react';
+import RecipeTagList from './RecipeTagList';
+import RecipeList from './RecipeList';
+
+const App = () => {
+  const [tags, setTags] = useState([]);
+  const [recipes, setRecipes] = useState([]);
+  const [selectedTag, setSelectedTag] = useState(null);
+
+  useEffect(() => {
+    fetch('https://dummyjson.com/recipes/tags')
+      .then((response) => response.json())
+      .then((data) => setTags(data));
+  }, []);
+
+  const handleTagClick = (tagName) => {
+    fetch(`https://dummyjson.com/recipes/tag/${tagName}`)
+      .then((response) => response.json())
+      .then((data) => setRecipes(data.recipes));
+    setSelectedTag(tagName);
+  };
+
+  const handleBackClick = () => {
+    setSelectedTag(null);
+    setRecipes([]);
+  };
+
+  return (
+    <div>
+      <h1>ACME Recipe O'Master</h1>
+      {selectedTag ? (
+        <RecipeList recipes={recipes} onBackClick={handleBackClick} />
+      ) : (
+        <RecipeTagList tagList={tags} onSelectTag={handleTagClick} />
+      )}
+    </div>
+  );
+};
+
 export default App;
+
